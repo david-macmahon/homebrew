@@ -15,28 +15,34 @@ class GedaGaf < Formula
   head 'git://git.geda-project.org/geda-gaf'
 
   depends_on 'pkg-config' => :build
-  depends_on 'gettext'
-  depends_on 'gtk+'
   depends_on 'guile'
+  depends_on 'gtk+'
+  depends_on 'flex'
   depends_on 'gawk'
   depends_on :x11
+  depends_on 'gettext' => :recommended
   depends_on 'libstroke' => :optional
+  depends_on 'pcb' => :optional
 
   def install
+    configure_args = [
+      "--prefix=#{prefix}",
+      '--disable-update-xdg-database'
+    ]
+
     # Help configure find libraries
-    gettext = Formula.factory('gettext')
-    pcb = Formula.factory('pcb')
-
-    extra_configure_args = []
-    if !build.devel?
-      extra_configure_args << "--with-pcb-confdir=#{pcb.etc/:pcb}"
+    if build.with? 'gettext'
+      gettext = Formula.factory('gettext')
+      configure_args << "--with-gettext=#{gettext.prefix}"
+      configure_args << "--with-pcb-datadir=#{HOMEBREW_PREFIX/:share/:pcb}"
     end
-    system "./configure", "--prefix=#{prefix}",
-                          "--with-gettext=#{gettext.prefix}",
-                          "--disable-update-xdg-database",
-                          "--with-pcb-datadir=#{HOMEBREW_PREFIX/:share/:pcb}",
-                          *extra_configure_args
 
+    if build.with? 'pcb'
+      pcb = Formula.factory('pcb')
+      configure_args << "--with-pcb-confdir=#{pcb.etc/:pcb}"
+    end
+
+    system "./configure", *configure_args
     system "make"
     system "make install"
   end
