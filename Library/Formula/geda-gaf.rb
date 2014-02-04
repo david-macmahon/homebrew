@@ -24,6 +24,15 @@ class GedaGaf < Formula
   depends_on 'libstroke' => :optional
   depends_on 'pcb' => :optional
 
+  option 'build-docs', 'Build documentation'
+
+  if build.include? 'build-docs'
+    depends_on 'doxygen' => :build
+    depends_on 'inkscape' => :build
+    depends_on 'imagemagick' => :build
+    depends_on 'graphviz' => :build
+  end
+
   def install
     configure_args = [
       "--prefix=#{prefix}",
