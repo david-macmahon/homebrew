@@ -16,6 +16,7 @@ class GedaGaf < Formula
   depends_on 'guile'
   depends_on 'gawk'
   depends_on :x11
+  depends_on 'libstroke' => :optional
 
   def install
     # Help configure find libraries
